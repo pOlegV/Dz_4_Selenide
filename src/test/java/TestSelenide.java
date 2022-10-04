@@ -1,7 +1,12 @@
 import com.codeborne.selenide.Condition;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -11,13 +16,22 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
 
 public class TestSelenide {
-
+    private WebDriver driver;
+    @BeforeAll
+    static void setAppAll(){
+        WebDriverManager.chromedriver().setup();
+    }
     public String generateDate(int days) {
         return LocalDate.now().plusDays(days).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     }
 
     @BeforeEach
     void setUpp() {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--headless");
+        driver = new ChromeDriver(options);
         open("http://localhost:9999");
     }
 
@@ -35,7 +49,7 @@ public class TestSelenide {
 
         String notification = "Встреча успешно забронирована на " + planningDate;
         $("[data-test-id='notification']")
-                .should(appear, Duration.ofSeconds(12)).should(Condition.text(notification));
+                .should(appear, Duration.ofSeconds(15)).should(Condition.text(notification));
 
 
     }
