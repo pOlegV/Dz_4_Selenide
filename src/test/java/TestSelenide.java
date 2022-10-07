@@ -28,9 +28,7 @@ public class TestSelenide {
     @BeforeEach
     void setUpp() {
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--headless");
+        options.setHeadless(true);
         driver = new ChromeDriver(options);
         open("http://localhost:9999");
     }
