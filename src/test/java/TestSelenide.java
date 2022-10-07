@@ -1,5 +1,6 @@
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.ElementsCollection;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,14 +26,12 @@ public class TestSelenide {
     public String generateDate(int days) {
         return LocalDate.now().plusDays(days).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     }
+    public String generateDateInCalendar(int days) {
+        return LocalDate.now().plusDays(days).format(DateTimeFormatter.ofPattern("dd"));
+    }
 
     @BeforeEach
     void setUpp() {
-//        Configuration.browserSize = "1000x800";
-//        ChromeOptions options = new ChromeOptions();
-//        options.setHeadless(true);
-//        driver = new ChromeDriver(options);
-//        driver.get("http://localhost:9999");
         open("http://localhost:9999");
     }
 
@@ -53,6 +52,42 @@ public class TestSelenide {
                 .should(appear, Duration.ofSeconds(15)).should(Condition.text(notification));
 
 
+    }
+    @Test
+    public void testFillingOutFormsPopup(){
+        $("[data-test-id='city'] input").setValue("Мо");
+        ElementsCollection city = $$(".menu-item__control" );
+        city.find(exactText("Москва")).click();
+        String dataNow;
+        $x("//input[@placeholder='Дата встречи']").click();
+        ElementsCollection data = $$("[data-day]" );
+        String planningDate = generateDateInCalendar(7);
+        for (int i = 1; i < 10; i++){
+            String tmp = "0" + i;
+            if (tmp.equals(planningDate)){
+                dataNow = planningDate.substring(1, 2);
+                planningDate = dataNow;
+            }
+        }
+        if (data.find(exactText(planningDate)).exists()){
+            $x("//input[@placeholder='Дата встречи']").click();
+            data.find(exactText(planningDate)).click();
+        }
+        else {
+            $x("//input[@placeholder='Дата встречи']").click();
+            ElementsCollection rightMonth = $$(".calendar__arrow_direction_right");
+            rightMonth.get(1).click();
+            data = $$("[data-day]" );
+            data.find(exactText(planningDate)).click();
+        }
+
+        $("[data-test-id='name'] input").setValue("Петров-Боткин Илья");
+        $("[data-test-id='phone'] input").setValue("+79874561234");
+        $("[data-test-id='agreement']").click();
+        $$("button").find(exactText("Забронировать")).click();
+        String notification = "Встреча успешно забронирована на " + planningDate;
+        $("[data-test-id='notification']")
+                .should(appear, Duration.ofSeconds(15)).should(Condition.text(notification));
     }
 
 }
