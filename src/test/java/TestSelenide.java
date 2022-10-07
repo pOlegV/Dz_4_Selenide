@@ -1,4 +1,5 @@
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Configuration;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,9 +28,11 @@ public class TestSelenide {
 
     @BeforeEach
     void setUpp() {
-        ChromeOptions options = new ChromeOptions();
-        options.setHeadless(true);
-        driver = new ChromeDriver(options);
+//        Configuration.browserSize = "1000x800";
+//        ChromeOptions options = new ChromeOptions();
+//        options.setHeadless(true);
+//        driver = new ChromeDriver(options);
+//        driver.get("http://localhost:9999");
         open("http://localhost:9999");
     }
 
